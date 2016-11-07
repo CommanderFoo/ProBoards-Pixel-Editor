@@ -1152,14 +1152,16 @@ class Pixel_Images {
 				// Check if alpha is not transparent
 
 				if(data[i + 3] > 0){
-					min_x = (min_x > -1)? min_x : x;
-					min_y = (min_y > -1)? min_y : y;
+					min_x = (min_x == -1)? x : Math.min(min_x, x);
+					min_y = (min_y == -1)? y : Math.min(min_y, y);
 
 					max_x = Math.max(max_x, x);
 					max_y = Math.max(max_y, y);
 				}
 			}
 		}
+
+		console.log(min_x, max_x, min_y, max_y);
 
 		// Put cutout image onto canvas
 
@@ -1171,6 +1173,8 @@ class Pixel_Images {
 		this.canvas_prep.height = max_y - min_y + 1;
 
 		this.context.putImageData(img, 0, 0);
+
+		//$("body").append($(this.canvas_prep))
 
 		if(data){
 			return this.canvas_prep.toDataURL();
