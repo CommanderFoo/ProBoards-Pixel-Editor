@@ -77,8 +77,8 @@ class Pixel_Images {
 	}
 
 	clear(){
-		this.canvas_prep.style.width = this.canvas_width + "px";
-		this.canvas_prep.style.height = this.canvas_height + "px";
+		this.canvas_prep.width = this.canvas_width;
+		this.canvas_prep.height = this.canvas_height;
 		this.context.clearRect(0, 0, this.canvas_width, this.canvas_height);
 		this.context.fillStyle = "transparent";
 		this.context.fillRect(0, 0, this.canvas_width, this.canvas_height);

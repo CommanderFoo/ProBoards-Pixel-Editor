@@ -256,6 +256,18 @@ class Pixel_Editor {
 		});
 	}
 
+	get_mouse_pos(e) {
+		let rect = this.canvas.getBoundingClientRect();
+
+		return {
+
+			x: e.clientX - rect.left,
+			y: e.clientY - rect.top
+
+		};
+
+	}
+
 	add_events(){
 		$(this.canvas).on("click", (e) => {
 			if(this.is_filling){
@@ -263,8 +275,11 @@ class Pixel_Editor {
 				return;
 			}
 
-			let mouse_x = e.offsetX;
-			let mouse_y = e.offsetY;
+			let m_pos = this.get_mouse_pos(e);
+			let mouse_x = m_pos.x;
+			let mouse_y = m_pos.y;
+
+			console.log(m_pos);
 
 			let cell_x = ~~ (mouse_x / this.cell_size);
 			let cell_y = ~~ (mouse_y / this.cell_size);

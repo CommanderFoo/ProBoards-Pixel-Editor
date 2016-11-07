@@ -24,7 +24,8 @@ class ProBoards_Pixel_Editor {
 
 		this.images = {};
 		this.help_dialog = null;
-		this.options_dialog = null
+		this.options_dialog = null;
+		this.export_dialog = null;
 
 		this.setup();
 		this.create_icon_and_dialog();
@@ -36,7 +37,7 @@ class ProBoards_Pixel_Editor {
 	}
 
 	static ready(){
-		if(yootil.location.thread()){
+		if(yootil.location.thread() || yootil.location.recent_posts()){
 			this.pixel_images = new Pixel_Images();
 
 			let self = this;
@@ -181,8 +182,11 @@ class ProBoards_Pixel_Editor {
 
 								yootil.key.set(ProBoards_Pixel_Editor.enums.PLUGIN_KEY, data, this_dialog_data.post_id);
 
-								let w = 580 - (580 * data.s / 100);
-								let h = 380 - (380 * data.s / 100);
+								let img_w = parseFloat(this_dialog_data.div.find("img").css("width"));
+								let img_h = parseFloat(this_dialog_data.div.find("img").css("height"));
+
+								let w = img_w - (img_w * data.s / 100);
+								let h = img_h - (img_h * data.s / 100);
 
 								this_dialog_data.div.find("img").css({
 
@@ -229,12 +233,35 @@ class ProBoards_Pixel_Editor {
 			ProBoards_Pixel_Editor.options_dialog.data("pixel-editor-image-dialog-data", dialog_data);
 			ProBoards_Pixel_Editor.options_dialog.dialog("open");
 		} else {
-			//ProBoards_Pixel_Editor.show_data_dialog(diapost_id);
+			ProBoards_Pixel_Editor.show_data_dialog(dialog_data.post_id);
 		}
 	}
 
-	static show_data_dialog(post_id){
-		console.log("show data dialog");
+	static show_data_dialog(id){
+		if(!this.export_dialog){
+			let html = "<div><textarea id='pixel-editor-export-data-area' style='width: 100%; height: 100%'></textarea></div>";
+
+			this.export_dialog = $(html).dialog({
+
+				title: "Pixel Art Data",
+				resizable: false,
+				draggable: false,
+				modal: true,
+				width: 500,
+				height: 400,
+				autoOpen: false,
+				open: function(){
+					let post_id = $(this).data("pixel-editor-post-id");
+					let data = yootil.key.value(ProBoards_Pixel_Editor.enums.PLUGIN_KEY, post_id);
+
+					$("#pixel-editor-export-data-area").val(data.a).select();
+				}
+
+			});
+		}
+
+		this.export_dialog.data("pixel-editor-post-id", id);
+		this.export_dialog.dialog("open");
 	}
 
 	static create_icon_and_dialog(){
@@ -276,10 +303,10 @@ class ProBoards_Pixel_Editor {
 			html += "<li id='pixel-editor-help' class='button' title='Help' alt='Help'><img src='" + this.images.help + "' /></li>";
 			html += "</ul>";
 			html += "</div>";
-			html += "<canvas id='pixel-editor-canvas' width='580' height='380' draggable='true'></canvas>";
+			html += "<canvas draggable='false' id='pixel-editor-canvas' width='580' height='380'></canvas>";
 
 			html += "<div id='pixel-editor-grid-svg'>";
-			html += "<svg width='581' height='381' xmlns='http://www.w3.org/2000/svg'>";
+			html += "<svg draggable='false' width='581' height='381' xmlns='http://www.w3.org/2000/svg'>";
 			html += "<defs>";
 			html += "<pattern id='smallGrid' patternUnits='userSpaceOnUse' width='20' height='20'>";
 			html += "<path fill='none' stroke='gray' stroke-width='1' d='M 20 0 L 0 0 0 20'></path>";
@@ -350,7 +377,7 @@ class ProBoards_Pixel_Editor {
 					title: "Pixel Editor",
 					modal: false,
 					height: 490,
-					width: 650,
+					width: 660,
 					resizable: false,
 					draggable: true,
 					icons: this.images.ui_icons,

@@ -3,6 +3,7 @@
 	cursor: crosshair;
 	margin-top: 5px;
 	float: left;
+	-webkit-user-drag: none;
 
 }
 
@@ -120,6 +121,13 @@
 
 }
 
+#pixel-editor-canvas-controls.ui-dialog-content {
+
+	overflow: hidden !important;
+
+}
+
+
 #pixel-editor-erase, #pixel-editor-redo, #pixel-editor-undo, #pixel-editor-mirror, #pixel-editor-erase-cell, #pixel-editor-attach-to-post, #pixel-editor-color-fill {
 
 	opacity: .5;
@@ -194,8 +202,10 @@
 #pixel-editor-grid-svg {
 
 	position: absolute;
-	margin-top: 5px;
+	margin-top: 0.35em;
+	margin-left: -0.015em;
 	pointer-events: none;
+	-webkit-user-drag: none;
 
 }
 
