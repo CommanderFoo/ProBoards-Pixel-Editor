@@ -21,6 +21,7 @@ class Pixel_Images {
 		if(data){
 			if(data.a && data.a.length > 2){
 				let img = new Image();
+				let style = "";
 
 				if(!this.lookup.has(data.k)){
 					this.clear();
@@ -59,19 +60,19 @@ class Pixel_Images {
 					img = this.lookup.get(data.k);
 				}
 
-				let style = "";
+				let w = img.width - (img.width * data.s / 100);
+				let h = img.height - (img.height * data.s / 100);
 
 				if(data.s){
-					let w = this.canvas_width - (this.canvas_width * data.s / 100);
-					let h = this.canvas_height - (this.canvas_height * data.s / 100);
-
 					style = " style='width: " + w + "px; height: " + h + "px;'";
 				}
 
-				let div = $("<div><img" + style + " src='" + img.src + "' /></div>").addClass("pixel-editor-user-art").attr("data-pixel-editor-post-id", parseInt(post_id, 10));
+				let $div = $("<div><img" + style + " src='" + img.src + "' /></div>").addClass("pixel-editor-user-art").attr("data-pixel-editor-post-id", parseInt(post_id, 10));
+				let $img = $div.find("img");
 
-				div.find("img").attr("data-pixel-editor-key", yootil.html_encode(data.k));
-				div.insertAfter($content.find("article"));
+				$img.attr("data-pixel-editor-key", yootil.html_encode(data.k));
+
+				$div.insertAfter($content.find("article"));
 			}
 		}
 	}

@@ -1,12 +1,15 @@
 class Pixel_Editor {
 
-	constructor({bin = ""} = {}){
+	constructor({bin = "", extra_dialog_width = 0, extra_dialog_height = 0} = {}){
 		this.cell_info = new Map();
 
 		this.selected_color = "#000";
 		this.grid_on = true;
 		this.cell_size = 20;
 		this.bin_16_icon = bin;
+
+		this.extra_width = extra_dialog_width;
+		this.extra_height = extra_dialog_height;
 
 		this.is_erasing_color = false;
 		this.is_mirroring = false;
@@ -232,9 +235,9 @@ class Pixel_Editor {
 			resizable: false,
 			draggable: false,
 			modal: true,
-			width: 500,
-			height: 400,
-			dialogClass: "pixel-editor-dialog",
+			width: 500 + this.extra_width,
+			height: 400 + this.extra_height,
+			dialogClass: "pixel-editor-dialog pixel-editor-dialog-noscroll",
 			open: () => {
 				$("#pixel-editor-export-data-area").val(this.data).select();
 
@@ -252,9 +255,9 @@ class Pixel_Editor {
 			resizable: false,
 			draggable: false,
 			modal: true,
-			width: 500,
-			height: 400,
-			dialogClass: "pixel-editor-dialog",
+			width: 500 + this.extra_width,
+			height: 400 + this.extra_height,
+			dialogClass: "pixel-editor-dialog pixel-editor-dialog-noscroll",
 			open: () => {
 				$("#pixel-editor-import-data-area").val("");
 			},
@@ -499,8 +502,8 @@ class Pixel_Editor {
 				resizable: false,
 				draggable: false,
 				modal: true,
-				width: 300,
-				height: 150,
+				width: 300 + this.extra_width,
+				height: 150 + this.extra_height,
 				autoOpen: false,
 				dialogClass: "pixel-editor-dialog",
 				open: () => {
@@ -552,8 +555,8 @@ class Pixel_Editor {
 				resizable: false,
 				draggable: false,
 				modal: true,
-				width: 330,
-				height: 150,
+				width: 330 + this.extra_width,
+				height: 150 + this.extra_height,
 				autoOpen: false,
 				dialogClass: "pixel-editor-dialog",
 
@@ -602,8 +605,8 @@ class Pixel_Editor {
 				resizable: false,
 				draggable: true,
 				modal: true,
-				width: 330,
-				height: 300,
+				width: 330 + this.extra_width,
+				height: 300 + this.extra_height,
 				autoOpen: false,
 				dialogClass: "pixel-editor-dialog",
 

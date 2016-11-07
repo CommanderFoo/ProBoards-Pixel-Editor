@@ -1,6 +1,7 @@
 /**
 * @license
 * ProBoards Pixel Editor 1.0.0
+* https://github.com/PopThosePringles/ProBoards-Pixel-Editor
 * The MIT License (MIT)
 *
 * Copyright (c) 2016 pixeldepth.net - http://support.proboards.com/user/2671
@@ -430,6 +431,10 @@ var Pixel_Editor = function () {
 
 		var _ref$bin = _ref.bin;
 		var bin = _ref$bin === undefined ? "" : _ref$bin;
+		var _ref$extra_dialog_wid = _ref.extra_dialog_width;
+		var extra_dialog_width = _ref$extra_dialog_wid === undefined ? 0 : _ref$extra_dialog_wid;
+		var _ref$extra_dialog_hei = _ref.extra_dialog_height;
+		var extra_dialog_height = _ref$extra_dialog_hei === undefined ? 0 : _ref$extra_dialog_hei;
 
 		_classCallCheck(this, Pixel_Editor);
 
@@ -439,6 +444,9 @@ var Pixel_Editor = function () {
 		this.grid_on = true;
 		this.cell_size = 20;
 		this.bin_16_icon = bin;
+
+		this.extra_width = extra_dialog_width;
+		this.extra_height = extra_dialog_height;
 
 		this.is_erasing_color = false;
 		this.is_mirroring = false;
@@ -680,9 +688,9 @@ var Pixel_Editor = function () {
 				resizable: false,
 				draggable: false,
 				modal: true,
-				width: 500,
-				height: 400,
-				dialogClass: "pixel-editor-dialog",
+				width: 500 + this.extra_width,
+				height: 400 + this.extra_height,
+				dialogClass: "pixel-editor-dialog pixel-editor-dialog-noscroll",
 				open: function open() {
 					$("#pixel-editor-export-data-area").val(_this3.data).select();
 				}
@@ -702,9 +710,9 @@ var Pixel_Editor = function () {
 				resizable: false,
 				draggable: false,
 				modal: true,
-				width: 500,
-				height: 400,
-				dialogClass: "pixel-editor-dialog",
+				width: 500 + this.extra_width,
+				height: 400 + this.extra_height,
+				dialogClass: "pixel-editor-dialog pixel-editor-dialog-noscroll",
 				open: function open() {
 					$("#pixel-editor-import-data-area").val("");
 				},
@@ -915,8 +923,8 @@ var Pixel_Editor = function () {
 					resizable: false,
 					draggable: false,
 					modal: true,
-					width: 300,
-					height: 150,
+					width: 300 + this.extra_width,
+					height: 150 + this.extra_height,
 					autoOpen: false,
 					dialogClass: "pixel-editor-dialog",
 					open: function open() {
@@ -967,8 +975,8 @@ var Pixel_Editor = function () {
 					resizable: false,
 					draggable: false,
 					modal: true,
-					width: 330,
-					height: 150,
+					width: 330 + this.extra_width,
+					height: 150 + this.extra_height,
 					autoOpen: false,
 					dialogClass: "pixel-editor-dialog",
 
@@ -1018,8 +1026,8 @@ var Pixel_Editor = function () {
 					resizable: false,
 					draggable: true,
 					modal: true,
-					width: 330,
-					height: 300,
+					width: 330 + this.extra_width,
+					height: 300 + this.extra_height,
 					autoOpen: false,
 					dialogClass: "pixel-editor-dialog",
 
@@ -1225,6 +1233,7 @@ var Pixel_Images = function () {
 			if (data) {
 				if (data.a && data.a.length > 2) {
 					var img = new Image();
+					var style = "";
 
 					if (!this.lookup.has(data.k)) {
 						this.clear();
@@ -1263,19 +1272,19 @@ var Pixel_Images = function () {
 						img = this.lookup.get(data.k);
 					}
 
-					var style = "";
+					var w = img.width - img.width * data.s / 100;
+					var h = img.height - img.height * data.s / 100;
 
 					if (data.s) {
-						var w = this.canvas_width - this.canvas_width * data.s / 100;
-						var h = this.canvas_height - this.canvas_height * data.s / 100;
-
 						style = " style='width: " + w + "px; height: " + h + "px;'";
 					}
 
-					var div = $("<div><img" + style + " src='" + img.src + "' /></div>").addClass("pixel-editor-user-art").attr("data-pixel-editor-post-id", parseInt(post_id, 10));
+					var $div = $("<div><img" + style + " src='" + img.src + "' /></div>").addClass("pixel-editor-user-art").attr("data-pixel-editor-post-id", parseInt(post_id, 10));
+					var $img = $div.find("img");
 
-					div.find("img").attr("data-pixel-editor-key", yootil.html_encode(data.k));
-					div.insertAfter($content.find("article"));
+					$img.attr("data-pixel-editor-key", yootil.html_encode(data.k));
+
+					$div.insertAfter($content.find("article"));
 				}
 			}
 		}
@@ -1375,6 +1384,10 @@ var ProBoards_Pixel_Editor = function () {
 	_createClass(ProBoards_Pixel_Editor, null, [{
 		key: "init",
 		value: function init() {
+			if (!!!document.createElement("canvas").getContext) {
+				return;
+			}
+
 			if (typeof yootil == "undefined") {
 				return;
 			}
@@ -1392,7 +1405,9 @@ var ProBoards_Pixel_Editor = function () {
 
 			this.settings = {
 
-				default_scale: 0
+				default_scale: 0,
+				extra_width: 0,
+				extra_height: 0
 
 			};
 
@@ -1416,7 +1431,7 @@ var ProBoards_Pixel_Editor = function () {
 
 			if (yootil.location.thread() || yootil.location.recent_posts()) {
 				(function () {
-					_this10.pixel_images = new Pixel_Images();
+					window.pixel_images = _this10.pixel_images = new Pixel_Images();
 
 					var self = _this10;
 
@@ -1448,20 +1463,22 @@ var ProBoards_Pixel_Editor = function () {
 									tolerance: "touch",
 									drop: function drop(event, ui) {
 										var $existing = $content.find("div.pixel-editor-user-art");
-
+										var key = pixel_editor.file_manager.opened_file.created + "_" + yootil.user.id();
 										if ($existing.length) {
 											$existing.remove();
 										}
 
-										var key = pixel_editor.file_manager.opened_file.created + "_" + yootil.user.id();
 										var trimed_data = self.pixel_images.trim(self.pixel_editor.image_data, self.pixel_editor.context);
 										var art = $("<div><img src='" + yootil.html_encode(trimed_data) + "' /></div>");
 
 										art.find("img").attr("data-pixel-editor-key", yootil.html_encode(key)).on("dblclick", self.show_dblclick_dialog);
 
 										if (self.settings.default_scale > 0) {
-											var w = 580 - 580 * self.settings.default_scale / 100;
-											var h = 380 - 380 * self.settings.default_scale / 100;
+											var cw = self.pixel_images.canvas_prep.width;
+											var ch = self.pixel_images.canvas_prep.height;
+
+											var w = cw - cw * self.settings.default_scale / 100;
+											var h = ch - ch * self.settings.default_scale / 100;
 
 											art.find("img").css({
 
@@ -1521,10 +1538,11 @@ var ProBoards_Pixel_Editor = function () {
 						draggable: true,
 						modal: true,
 						resizable: false,
-						width: 340,
-						height: 180,
+						width: 340 + ProBoards_Pixel_Editor.settings.extra_width,
+						height: 180 + ProBoards_Pixel_Editor.settings.extra_height,
 						title: "Pixel Art - Options",
 						autoOpen: false,
+						dialogClass: "pixel-editor-dialog-noscroll",
 
 						open: function open() {
 							var this_dialog_data = $(this).data("pixel-editor-image-dialog-data");
@@ -1555,8 +1573,9 @@ var ProBoards_Pixel_Editor = function () {
 
 								yootil.key.set(ProBoards_Pixel_Editor.enums.PLUGIN_KEY, data, this_dialog_data.post_id);
 
-								var img_w = parseFloat(this_dialog_data.div.find("img").css("width"));
-								var img_h = parseFloat(this_dialog_data.div.find("img").css("height"));
+								var pixel_img = ProBoards_Pixel_Editor.pixel_images.lookup.get(dialog_data.key);
+								var img_w = parseFloat(pixel_img ? pixel_img.width : ProBoards_Pixel_Editor.pixel_images.canvas_prep.width);
+								var img_h = parseFloat(pixel_img ? pixel_img.height : ProBoards_Pixel_Editor.pixel_images.canvas_prep.height);
 
 								var w = img_w - img_w * data.s / 100;
 								var h = img_h - img_h * data.s / 100;
@@ -1615,9 +1634,10 @@ var ProBoards_Pixel_Editor = function () {
 					resizable: false,
 					draggable: false,
 					modal: true,
-					width: 500,
-					height: 400,
+					width: 500 + ProBoards_Pixel_Editor.settings.extra_width,
+					height: 400 + ProBoards_Pixel_Editor.settings.extra_height,
 					autoOpen: false,
+					dialogClass: "pixel-editor-dialog-noscroll",
 					open: function open() {
 						var post_id = $(this).data("pixel-editor-post-id");
 						var data = yootil.key.value(ProBoards_Pixel_Editor.enums.PLUGIN_KEY, post_id);
@@ -1640,7 +1660,9 @@ var ProBoards_Pixel_Editor = function () {
 				(function () {
 					window.pixel_editor = _this11.pixel_editor = new Pixel_Editor({
 
-						bin: _this11.images.bin_16
+						bin: _this11.images.bin_16,
+						extra_dialog_width: _this11.settings.extra_width,
+						extra_dialog_height: _this11.settings.extra_height
 
 					});
 
@@ -1749,8 +1771,8 @@ var ProBoards_Pixel_Editor = function () {
 
 							title: "Pixel Editor",
 							modal: false,
-							height: 490,
-							width: 660,
+							height: 490 + _this11.settings.extra_width,
+							width: 660 + _this11.settings.extra_height,
 							resizable: false,
 							draggable: true,
 							icons: _this11.images.ui_icons,
@@ -1802,8 +1824,8 @@ var ProBoards_Pixel_Editor = function () {
 
 					title: "Pixel Editor - Help",
 					modal: false,
-					height: 400,
-					width: 460,
+					height: 400 + ProBoards_Pixel_Editor.settings.extra_width,
+					width: 460 + ProBoards_Pixel_Editor.settings.extra_height,
 					resizable: false,
 					draggable: true,
 					autoOpen: false,
@@ -1820,7 +1842,12 @@ var ProBoards_Pixel_Editor = function () {
 			var plugin = pb.plugin.get(this.enums.PLUGIN_ID);
 
 			if (plugin && plugin.settings) {
-				var settings = plugin.settings;
+				var plugin_settings = plugin.settings;
+
+				this.settings.default_scale = parseFloat(plugin_settings.default_scale) ? parseFloat(plugin_settings.default_scale) : 0;
+
+				this.settings.extra_width = parseFloat(plugin_settings.extra_width) ? parseFloat(plugin_settings.extra_width) : 0;
+				this.settings.extra_height = parseFloat(plugin_settings.extra_height) ? parseFloat(plugin_settings.extra_height) : 0;
 
 				if (plugin.images) {
 					this.images = plugin.images;

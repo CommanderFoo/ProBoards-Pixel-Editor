@@ -1,6 +1,10 @@
 class ProBoards_Pixel_Editor {
 
 	static init(){
+		if(!(!!document.createElement("canvas").getContext)){
+			return;
+		}
+
 		if(typeof yootil == "undefined"){
 			return;
 		}
@@ -18,7 +22,9 @@ class ProBoards_Pixel_Editor {
 
 		this.settings = {
 
-			default_scale: 0
+			default_scale: 0,
+			extra_width: 0,
+			extra_height: 0
 
 		};
 
@@ -38,7 +44,7 @@ class ProBoards_Pixel_Editor {
 
 	static ready(){
 		if(yootil.location.thread() || yootil.location.recent_posts()){
-			this.pixel_images = new Pixel_Images();
+			window.pixel_images = this.pixel_images = new Pixel_Images();
 
 			let self = this;
 
@@ -70,20 +76,23 @@ class ProBoards_Pixel_Editor {
 							tolerance: "touch",
 							drop(event, ui){
 								let $existing = $content.find("div.pixel-editor-user-art");
-
+								let key = pixel_editor.file_manager.opened_file.created + "_" + yootil.user.id();
 								if($existing.length){
 									$existing.remove();
 								}
 
-								let key = pixel_editor.file_manager.opened_file.created + "_" + yootil.user.id();
+
 								let trimed_data = self.pixel_images.trim(self.pixel_editor.image_data, self.pixel_editor.context);
 								let art = $("<div><img src='" + yootil.html_encode(trimed_data) + "' /></div>");
 
 								art.find("img").attr("data-pixel-editor-key", yootil.html_encode(key)).on("dblclick", self.show_dblclick_dialog);
 
 								if(self.settings.default_scale > 0){
-									let w = 580 - (580 * self.settings.default_scale / 100);
-									let h = 380 - (380 * self.settings.default_scale / 100);
+									let cw = self.pixel_images.canvas_prep.width;
+									let ch = self.pixel_images.canvas_prep.height;
+
+									let w = cw - (cw * self.settings.default_scale / 100);
+									let h = ch - (ch * self.settings.default_scale / 100);
 
 									art.find("img").css({
 
@@ -144,10 +153,11 @@ class ProBoards_Pixel_Editor {
 					draggable: true,
 					modal: true,
 					resizable: false,
-					width: 340,
-					height: 180,
+					width: 340 + ProBoards_Pixel_Editor.settings.extra_width,
+					height: 180 + ProBoards_Pixel_Editor.settings.extra_height,
 					title: "Pixel Art - Options",
 					autoOpen: false,
+					dialogClass: "pixel-editor-dialog-noscroll",
 
 					open: function(){
 						let this_dialog_data = $(this).data("pixel-editor-image-dialog-data");
@@ -182,8 +192,9 @@ class ProBoards_Pixel_Editor {
 
 								yootil.key.set(ProBoards_Pixel_Editor.enums.PLUGIN_KEY, data, this_dialog_data.post_id);
 
-								let img_w = parseFloat(this_dialog_data.div.find("img").css("width"));
-								let img_h = parseFloat(this_dialog_data.div.find("img").css("height"));
+								let pixel_img = ProBoards_Pixel_Editor.pixel_images.lookup.get(dialog_data.key);
+								let img_w = parseFloat((pixel_img)? pixel_img.width : ProBoards_Pixel_Editor.pixel_images.canvas_prep.width);
+								let img_h = parseFloat((pixel_img)? pixel_img.height : ProBoards_Pixel_Editor.pixel_images.canvas_prep.height);
 
 								let w = img_w - (img_w * data.s / 100);
 								let h = img_h - (img_h * data.s / 100);
@@ -247,9 +258,10 @@ class ProBoards_Pixel_Editor {
 				resizable: false,
 				draggable: false,
 				modal: true,
-				width: 500,
-				height: 400,
+				width: 500 + ProBoards_Pixel_Editor.settings.extra_width,
+				height: 400 + ProBoards_Pixel_Editor.settings.extra_height,
 				autoOpen: false,
+				dialogClass: "pixel-editor-dialog-noscroll",
 				open: function(){
 					let post_id = $(this).data("pixel-editor-post-id");
 					let data = yootil.key.value(ProBoards_Pixel_Editor.enums.PLUGIN_KEY, post_id);
@@ -268,7 +280,9 @@ class ProBoards_Pixel_Editor {
 		if(this.images.draw_16){
 			window.pixel_editor = this.pixel_editor = new Pixel_Editor({
 
-				bin: this.images.bin_16
+				bin: this.images.bin_16,
+				extra_dialog_width: this.settings.extra_width,
+				extra_dialog_height: this.settings.extra_height
 
 			});
 
@@ -377,8 +391,8 @@ class ProBoards_Pixel_Editor {
 
 					title: "Pixel Editor",
 					modal: false,
-					height: 490,
-					width: 660,
+					height: 490 + this.settings.extra_width,
+					width: 660 + this.settings.extra_height,
 					resizable: false,
 					draggable: true,
 					icons: this.images.ui_icons,
@@ -426,8 +440,8 @@ class ProBoards_Pixel_Editor {
 
 				title: "Pixel Editor - Help",
 				modal: false,
-				height: 400,
-				width: 460,
+				height: 400 + ProBoards_Pixel_Editor.settings.extra_width,
+				width: 460 + ProBoards_Pixel_Editor.settings.extra_height,
 				resizable: false,
 				draggable: true,
 				autoOpen: false,
@@ -443,7 +457,12 @@ class ProBoards_Pixel_Editor {
 		let plugin = pb.plugin.get(this.enums.PLUGIN_ID);
 
 		if(plugin && plugin.settings){
-			let settings = plugin.settings;
+			let plugin_settings = plugin.settings;
+
+			this.settings.default_scale = (parseFloat(plugin_settings.default_scale))? parseFloat(plugin_settings.default_scale) : 0;
+
+			this.settings.extra_width = (parseFloat(plugin_settings.extra_width))? parseFloat(plugin_settings.extra_width) : 0;
+			this.settings.extra_height = (parseFloat(plugin_settings.extra_height))? parseFloat(plugin_settings.extra_height) : 0;
 
 			if(plugin.images){
 				this.images = plugin.images;
