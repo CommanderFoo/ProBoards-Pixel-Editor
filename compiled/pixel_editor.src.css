@@ -1,0 +1,226 @@
+#pixel-editor-canvas {
+
+	cursor: crosshair;
+	margin-top: 5px;
+	float: left;
+
+}
+
+#pixel-editor-canvas-controls .button {
+
+	height: 30px !important;
+	padding: 1px !important;
+
+}
+
+#pixel-editor-controls-top .button:first-child {
+
+	margin-left: 0px;
+
+}
+
+#pixel-editor-controls-top li {
+
+	float: left;
+
+}
+
+#pixel-editor-controls-top {
+
+	width: 100%;
+
+}
+
+#pixel-editor-controls-top ul {
+
+	float: left;
+	display: block;
+	margin-right: 15px;
+	white-space: nowrap;
+
+}
+
+#pixel-editor-controls-top ul:last-child {
+
+	margin-right: 0px;
+
+}
+
+#pixel-editor-controls-right {
+
+	float: left;
+	width: 42px;
+	margin-left: 3px;
+	margin-top: 5px;
+
+}
+
+#pixel-editor-controls-right li {
+
+	margin-bottom: 5px;
+
+}
+
+.ui-dialog .dialog-tweaks-titlebar-controls {
+
+	position: absolute;
+	top: 50%;
+	margin: -10px 0 0 0;
+	padding: 1px;
+
+}
+
+.ui-dialog .dialog-tweaks-titlebar-minimise {
+
+	right: 3.8em;
+
+}
+
+.ui-dialog .dialog-tweaks-minimise span {
+
+	background-position: 0px 0px;
+
+}
+
+.ui-dialog .dialog-tweaks-minimise:hover {
+
+	background-position: -20px 0px;
+
+}
+
+.ui-dialog .dialog-tweaks-titlebar-restore {
+
+	right: 2em;
+	opacity: .5;
+
+}
+
+.ui-dialog .dialog-tweaks-restore {
+
+	background-position: -40px 0px;
+
+}
+
+.ui-dialog .dialog-tweaks-restore:hover {
+
+	background-position: -60px 0px;
+
+}
+
+.ui-dialog.dialog-tweaks-minimised {
+
+	padding: 0px;
+	bottom: 0px;
+
+}
+
+.pixel-editor-dialog {
+
+	position: fixed;
+
+}
+
+#pixel-editor-erase, #pixel-editor-redo, #pixel-editor-undo, #pixel-editor-mirror, #pixel-editor-erase-cell, #pixel-editor-attach-to-post, #pixel-editor-color-fill {
+
+	opacity: .5;
+
+}
+
+.pixel-editor-active-control, .pixel-editor-active-control:hover {
+
+	background-color: #f5f6ac;
+	opacity: 1 !important;
+
+}
+
+.pixel-editor-button-disabled {
+
+	opacity: 0.5;
+
+}
+
+#pixel-editor-save-file-name {
+
+	width: 185px;
+	border: 1px solid;
+
+}
+
+#pixel-editor-file-list div:hover {
+
+	background-color: #dbdbd8;
+
+}
+
+#pixel-editor-file-list div {
+
+	padding: 5px;
+	margin-bottom: 6px;
+	background-color: #f3f3eb;
+	cursor: pointer;
+	border-radius: 6px;
+
+}
+
+#pixel-editor-file-list div span {
+
+	float: right;
+
+}
+
+#pixel-editor-help div img {
+
+	vertical-align: bottom;
+
+}
+
+#pixel-editor-help div span {
+
+	position: relative;
+	top: -10px;
+	margin-left: 5px;
+
+}
+
+#pixel-editor-help div {
+
+	margin-bottom: 3px;
+	background-color: #f3f3eb;
+	padding: 4px;
+	border-radius: 6px;
+
+}
+
+#pixel-editor-grid-svg {
+
+	position: absolute;
+	margin-top: 5px;
+	pointer-events: none;
+
+}
+
+#pixel-editor-status-info {
+
+	margin-top: 7px;
+
+}
+
+#pixel-editor-status-info > span {
+
+	position: relative;
+	top: -4px;
+
+}
+
+#pixel-editor-status-info {
+
+	font-size: 12px;
+
+}
+
+#pixel-editor-art-scale {
+
+	width: 50px;
+	border: 1px solid;
+
+}

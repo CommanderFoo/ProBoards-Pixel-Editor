@@ -1,0 +1,3 @@
+class Storage_Manager {
+
+}
