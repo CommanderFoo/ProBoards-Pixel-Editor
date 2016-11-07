@@ -382,6 +382,7 @@ class Pixel_Editor {
 		this.is_erasing_color = false;
 		this.is_mirroring = false;
 		this.is_filling = false;
+		this.color_picking = false;
 
 		this.undo_manager = new Undo_Manager();
 		this.file_manager = new File_Manager();
@@ -449,6 +450,7 @@ class Pixel_Editor {
 		this.controls_save_as = this.controls.find("#pixel-editor-save-as");
 		this.controls_open = this.controls.find("#pixel-editor-open");
 		this.controls_drag = this.controls.find("#pixel-editor-drag-to");
+		this.controls_picker = this.controls.find("#pixel-editor-picker");
 		this.svg_grid = $("#pixel-editor-grid-svg");
 		this.controls_fill_color = this.controls.find("#pixel-editor-color-fill");
 		this.status_bar = this.controls.find("#pixel-editor-status-info");
@@ -507,6 +509,16 @@ class Pixel_Editor {
 			}
 		});
 
+		this.controls_picker.on("click", () => {
+			if(this.color_picking){
+				this.controls_picker.removeClass("pixel-editor-active-control");
+				this.color_picking = false;
+			} else {
+				this.controls_picker.addClass("pixel-editor-active-control");
+				this.color_picking = true;
+			}
+		});
+
 		this.controls_clear.on("click", () => {
 			this.cell_info.clear();
 			this.init_map();
@@ -524,6 +536,10 @@ class Pixel_Editor {
 
 			if(this.is_filling){
 				this.controls_fill_color.trigger("click");
+			}
+
+			if(this.color_picking){
+				this.controls_picker.trigger("click");
 			}
 
 			this.set_status("Canvas has been cleared, you can't undo this action.");
@@ -650,7 +666,10 @@ class Pixel_Editor {
 			let mouse_x = m_pos.x;
 			let mouse_y = m_pos.y;
 
-			console.log(m_pos);
+			if(this.color_picking){
+				this.set_color(mouse_x, mouse_y);
+				return;
+			}
 
 			let cell_x = ~~ (mouse_x / this.cell_size);
 			let cell_y = ~~ (mouse_y / this.cell_size);
@@ -1028,6 +1047,25 @@ class Pixel_Editor {
 		return this.context.getImageData(0, 0, this.canvas_width, this.canvas_height);
 	}
 
+	set_color(x = 0, y = 0){
+		let data = this.context.getImageData(x, y, 1, 1).data;
+		let hex = (data[3] > 0)? "#" + $.ui.colorPicker.prototype._RGBtoHEX(data[0], data[1], data[2]) : ""
+
+		this.selected_color = hex;
+
+		let status = "Color picked: ";
+
+		if(this.selected_color == ""){
+			status += "transparent";
+		} else {
+			status += "<span style='color: " + this.selected_color + "'>" + this.selected_color + "</span>.";
+		}
+
+		this.set_status(status);
+		this.color_picking = false;
+		this.controls_picker.removeClass("pixel-editor-active-control");
+	}
+
 }
 
 class Pixel_Images {
@@ -1161,7 +1199,7 @@ class Pixel_Images {
 			}
 		}
 
-		console.log(min_x, max_x, min_y, max_y);
+		//console.log(min_x, max_x, min_y, max_y);
 
 		// Put cutout image onto canvas
 
@@ -1505,6 +1543,7 @@ class ProBoards_Pixel_Editor {
 			html += "<ul>";
 			html += "<li id='pixel-editor-color-picker' class='button' title='Pick Color' alt='Pick Color'><img src='" + this.images.color_wheel + "' /></li>";
 			html += "<li id='pixel-editor-color-fill' class='button' title='Fill Color' alt='Fill Color'><img src='" + this.images.fill_color + "' /></li>";
+			html += "<li id='pixel-editor-picker' class='button' title='Color Picker' alt='Color Picker'><img src='" + this.images.color_picker + "' /></li>";
 			html += "<li id='pixel-editor-erase' class='button' title='Erase Color' alt='Erase Color'><img src='" + this.images.eraser + "' /></li>";
 			html += "<li id='pixel-editor-grid' class='button pixel-editor-active-control' title='Hide Grid' alt='Hide Grid'><img src='" + this.images.grid + "' /></li>";
 			html += "<li id='pixel-editor-mirror' class='button' title='Mirror' alt='Mirror'><img src='" + this.images.mirror + "' /></li>";
@@ -1600,6 +1639,7 @@ class ProBoards_Pixel_Editor {
 			html += "<br />";
 			html += "<div><img src='" + this.images.color_wheel + "' alt='Color' title='Color' /> <span>Select color to use.</span></div>";
 			html += "<div><img src='" + this.images.fill_color + "' alt='Fill Color' title='Fill Color' /> <span>Fill all pixels with selected color.</span></div>";
+			html += "<div><img src='" + this.images.color_picker + "' alt='Color Picker' title='Color Picker' /> <span>Pick color from the canvas.</span></div>";
 			html += "<div><img src='" + this.images.eraser + "' alt='Erase Color' title='Erase Color' /> <span>Erases color.</span></div>";
 			html += "<div><img src='" + this.images.grid + "' alt='Hide / Show Grid' title='Hide / Show Grid' /> <span>Hide / Show grid while creating art.</span></div>";
 			html += "<div><img src='" + this.images.mirror + "' alt='Mirror' title='Mirror' /> <span>Mirror changes on the right.</span></div>";

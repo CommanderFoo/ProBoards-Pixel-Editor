@@ -11,6 +11,7 @@ class Pixel_Editor {
 		this.is_erasing_color = false;
 		this.is_mirroring = false;
 		this.is_filling = false;
+		this.color_picking = false;
 
 		this.undo_manager = new Undo_Manager();
 		this.file_manager = new File_Manager();
@@ -78,6 +79,7 @@ class Pixel_Editor {
 		this.controls_save_as = this.controls.find("#pixel-editor-save-as");
 		this.controls_open = this.controls.find("#pixel-editor-open");
 		this.controls_drag = this.controls.find("#pixel-editor-drag-to");
+		this.controls_picker = this.controls.find("#pixel-editor-picker");
 		this.svg_grid = $("#pixel-editor-grid-svg");
 		this.controls_fill_color = this.controls.find("#pixel-editor-color-fill");
 		this.status_bar = this.controls.find("#pixel-editor-status-info");
@@ -136,6 +138,16 @@ class Pixel_Editor {
 			}
 		});
 
+		this.controls_picker.on("click", () => {
+			if(this.color_picking){
+				this.controls_picker.removeClass("pixel-editor-active-control");
+				this.color_picking = false;
+			} else {
+				this.controls_picker.addClass("pixel-editor-active-control");
+				this.color_picking = true;
+			}
+		});
+
 		this.controls_clear.on("click", () => {
 			this.cell_info.clear();
 			this.init_map();
@@ -153,6 +165,10 @@ class Pixel_Editor {
 
 			if(this.is_filling){
 				this.controls_fill_color.trigger("click");
+			}
+
+			if(this.color_picking){
+				this.controls_picker.trigger("click");
 			}
 
 			this.set_status("Canvas has been cleared, you can't undo this action.");
@@ -279,7 +295,10 @@ class Pixel_Editor {
 			let mouse_x = m_pos.x;
 			let mouse_y = m_pos.y;
 
-			console.log(m_pos);
+			if(this.color_picking){
+				this.set_color(mouse_x, mouse_y);
+				return;
+			}
 
 			let cell_x = ~~ (mouse_x / this.cell_size);
 			let cell_y = ~~ (mouse_y / this.cell_size);
@@ -655,6 +674,25 @@ class Pixel_Editor {
 
 	get image_data(){
 		return this.context.getImageData(0, 0, this.canvas_width, this.canvas_height);
+	}
+
+	set_color(x = 0, y = 0){
+		let data = this.context.getImageData(x, y, 1, 1).data;
+		let hex = (data[3] > 0)? "#" + $.ui.colorPicker.prototype._RGBtoHEX(data[0], data[1], data[2]) : ""
+
+		this.selected_color = hex;
+
+		let status = "Color picked: ";
+
+		if(this.selected_color == ""){
+			status += "transparent";
+		} else {
+			status += "<span style='color: " + this.selected_color + "'>" + this.selected_color + "</span>.";
+		}
+
+		this.set_status(status);
+		this.color_picking = false;
+		this.controls_picker.removeClass("pixel-editor-active-control");
 	}
 
 }

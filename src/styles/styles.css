@@ -128,7 +128,7 @@
 }
 
 
-#pixel-editor-erase, #pixel-editor-redo, #pixel-editor-undo, #pixel-editor-mirror, #pixel-editor-erase-cell, #pixel-editor-attach-to-post, #pixel-editor-color-fill {
+#pixel-editor-erase, #pixel-editor-redo, #pixel-editor-undo, #pixel-editor-mirror, #pixel-editor-erase-cell, #pixel-editor-attach-to-post, #pixel-editor-color-fill, #pixel-editor-picker {
 
 	opacity: .5;
 

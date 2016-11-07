@@ -320,6 +320,7 @@ class ProBoards_Pixel_Editor {
 			html += "<ul>";
 			html += "<li id='pixel-editor-color-picker' class='button' title='Pick Color' alt='Pick Color'><img src='" + this.images.color_wheel + "' /></li>";
 			html += "<li id='pixel-editor-color-fill' class='button' title='Fill Color' alt='Fill Color'><img src='" + this.images.fill_color + "' /></li>";
+			html += "<li id='pixel-editor-picker' class='button' title='Color Picker' alt='Color Picker'><img src='" + this.images.color_picker + "' /></li>";
 			html += "<li id='pixel-editor-erase' class='button' title='Erase Color' alt='Erase Color'><img src='" + this.images.eraser + "' /></li>";
 			html += "<li id='pixel-editor-grid' class='button pixel-editor-active-control' title='Hide Grid' alt='Hide Grid'><img src='" + this.images.grid + "' /></li>";
 			html += "<li id='pixel-editor-mirror' class='button' title='Mirror' alt='Mirror'><img src='" + this.images.mirror + "' /></li>";
@@ -415,6 +416,7 @@ class ProBoards_Pixel_Editor {
 			html += "<br />";
 			html += "<div><img src='" + this.images.color_wheel + "' alt='Color' title='Color' /> <span>Select color to use.</span></div>";
 			html += "<div><img src='" + this.images.fill_color + "' alt='Fill Color' title='Fill Color' /> <span>Fill all pixels with selected color.</span></div>";
+			html += "<div><img src='" + this.images.color_picker + "' alt='Color Picker' title='Color Picker' /> <span>Pick color from the canvas.</span></div>";
 			html += "<div><img src='" + this.images.eraser + "' alt='Erase Color' title='Erase Color' /> <span>Erases color.</span></div>";
 			html += "<div><img src='" + this.images.grid + "' alt='Hide / Show Grid' title='Hide / Show Grid' /> <span>Hide / Show grid while creating art.</span></div>";
 			html += "<div><img src='" + this.images.mirror + "' alt='Mirror' title='Mirror' /> <span>Mirror changes on the right.</span></div>";

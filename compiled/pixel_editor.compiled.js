@@ -443,6 +443,7 @@ var Pixel_Editor = function () {
 		this.is_erasing_color = false;
 		this.is_mirroring = false;
 		this.is_filling = false;
+		this.color_picking = false;
 
 		this.undo_manager = new Undo_Manager();
 		this.file_manager = new File_Manager();
@@ -523,6 +524,7 @@ var Pixel_Editor = function () {
 			this.controls_save_as = this.controls.find("#pixel-editor-save-as");
 			this.controls_open = this.controls.find("#pixel-editor-open");
 			this.controls_drag = this.controls.find("#pixel-editor-drag-to");
+			this.controls_picker = this.controls.find("#pixel-editor-picker");
 			this.svg_grid = $("#pixel-editor-grid-svg");
 			this.controls_fill_color = this.controls.find("#pixel-editor-color-fill");
 			this.status_bar = this.controls.find("#pixel-editor-status-info");
@@ -581,6 +583,16 @@ var Pixel_Editor = function () {
 				}
 			});
 
+			this.controls_picker.on("click", function () {
+				if (_this2.color_picking) {
+					_this2.controls_picker.removeClass("pixel-editor-active-control");
+					_this2.color_picking = false;
+				} else {
+					_this2.controls_picker.addClass("pixel-editor-active-control");
+					_this2.color_picking = true;
+				}
+			});
+
 			this.controls_clear.on("click", function () {
 				_this2.cell_info.clear();
 				_this2.init_map();
@@ -598,6 +610,10 @@ var Pixel_Editor = function () {
 
 				if (_this2.is_filling) {
 					_this2.controls_fill_color.trigger("click");
+				}
+
+				if (_this2.color_picking) {
+					_this2.controls_picker.trigger("click");
 				}
 
 				_this2.set_status("Canvas has been cleared, you can't undo this action.");
@@ -732,7 +748,10 @@ var Pixel_Editor = function () {
 				var mouse_x = m_pos.x;
 				var mouse_y = m_pos.y;
 
-				console.log(m_pos);
+				if (_this5.color_picking) {
+					_this5.set_color(mouse_x, mouse_y);
+					return;
+				}
 
 				var cell_x = ~~(mouse_x / _this5.cell_size);
 				var cell_y = ~~(mouse_y / _this5.cell_size);
@@ -1080,6 +1099,29 @@ var Pixel_Editor = function () {
 			this.status_bar.find("span").html(msg);
 		}
 	}, {
+		key: "set_color",
+		value: function set_color() {
+			var x = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
+			var y = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
+
+			var data = this.context.getImageData(x, y, 1, 1).data;
+			var hex = data[3] > 0 ? "#" + $.ui.colorPicker.prototype._RGBtoHEX(data[0], data[1], data[2]) : "";
+
+			this.selected_color = hex;
+
+			var status = "Color picked: ";
+
+			if (this.selected_color == "") {
+				status += "transparent";
+			} else {
+				status += "<span style='color: " + this.selected_color + "'>" + this.selected_color + "</span>.";
+			}
+
+			this.set_status(status);
+			this.color_picking = false;
+			this.controls_picker.removeClass("pixel-editor-active-control");
+		}
+	}, {
 		key: "width",
 		get: function get() {
 			return this.canvas_width;
@@ -1301,7 +1343,7 @@ var Pixel_Images = function () {
 				}
 			}
 
-			console.log(min_x, max_x, min_y, max_y);
+			//console.log(min_x, max_x, min_y, max_y);
 
 			// Put cutout image onto canvas
 
@@ -1650,6 +1692,7 @@ var ProBoards_Pixel_Editor = function () {
 					html += "<ul>";
 					html += "<li id='pixel-editor-color-picker' class='button' title='Pick Color' alt='Pick Color'><img src='" + _this11.images.color_wheel + "' /></li>";
 					html += "<li id='pixel-editor-color-fill' class='button' title='Fill Color' alt='Fill Color'><img src='" + _this11.images.fill_color + "' /></li>";
+					html += "<li id='pixel-editor-picker' class='button' title='Color Picker' alt='Color Picker'><img src='" + _this11.images.color_picker + "' /></li>";
 					html += "<li id='pixel-editor-erase' class='button' title='Erase Color' alt='Erase Color'><img src='" + _this11.images.eraser + "' /></li>";
 					html += "<li id='pixel-editor-grid' class='button pixel-editor-active-control' title='Hide Grid' alt='Hide Grid'><img src='" + _this11.images.grid + "' /></li>";
 					html += "<li id='pixel-editor-mirror' class='button' title='Mirror' alt='Mirror'><img src='" + _this11.images.mirror + "' /></li>";
@@ -1749,6 +1792,7 @@ var ProBoards_Pixel_Editor = function () {
 				html += "<br />";
 				html += "<div><img src='" + this.images.color_wheel + "' alt='Color' title='Color' /> <span>Select color to use.</span></div>";
 				html += "<div><img src='" + this.images.fill_color + "' alt='Fill Color' title='Fill Color' /> <span>Fill all pixels with selected color.</span></div>";
+				html += "<div><img src='" + this.images.color_picker + "' alt='Color Picker' title='Color Picker' /> <span>Pick color from the canvas.</span></div>";
 				html += "<div><img src='" + this.images.eraser + "' alt='Erase Color' title='Erase Color' /> <span>Erases color.</span></div>";
 				html += "<div><img src='" + this.images.grid + "' alt='Hide / Show Grid' title='Hide / Show Grid' /> <span>Hide / Show grid while creating art.</span></div>";
 				html += "<div><img src='" + this.images.mirror + "' alt='Mirror' title='Mirror' /> <span>Mirror changes on the right.</span></div>";
